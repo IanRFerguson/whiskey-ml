@@ -1,0 +1,15 @@
+whiskey_ml:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: ian-dev-444015
+      dataset: dbt
+      threads: 4 
+      keyfile: /app/src/service_accounts/ian_dev.json
+
+      # For dbt-python models
+      gcs_bucket: ian-dev
+      dataproc_cluster_name: ian-dev
+      dataproc_region: us-central1

@@ -1,0 +1,7 @@
+services:
+  whiskey_ml:
+    build:
+      context: .
+      dockerfile: ./dev/Dockerfile
+    volumes:
+      - .:/app
