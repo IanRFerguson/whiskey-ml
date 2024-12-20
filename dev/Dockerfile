@@ -8,4 +8,6 @@ RUN pip install -r dev/requirements.txt
 
 COPY . .
 
+WORKDIR /app/src
+
 CMD ["sleep", "infinity"]

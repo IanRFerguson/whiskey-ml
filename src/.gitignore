@@ -5,3 +5,5 @@ logs/
 
 .user.yml
 package-lock.yml
+
+service_accounts/*.json

@@ -16,7 +16,8 @@ SELECT
     proof,
     rating,
     my_review,
-    TRIM(note) AS note
+    TRIM(note) AS _note_value,
+    ROW_NUMBER() OVER (PARTITION BY dbt_id) AS _note_index
 
 FROM base
 CROSS JOIN UNNEST(base.flavor_profile) AS note

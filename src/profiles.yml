@@ -7,9 +7,9 @@ whiskey_ml:
       project: ian-dev-444015
       dataset: dbt
       threads: 4 
-      keyfile: /app/src/service_accounts/ian_dev.json
+      keyfile: /app/src/service_accounts/ian_dev_v2.json
 
       # For dbt-python models
-      gcs_bucket: ian-dev
-      dataproc_cluster_name: ian-dev
+      gcs_bucket: whiskey-dbt-dev
+      dataproc_cluster_name: cluster-b7fc
       dataproc_region: us-central1

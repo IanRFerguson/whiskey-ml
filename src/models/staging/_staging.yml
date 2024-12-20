@@ -20,11 +20,11 @@ models:
       - name: my_review
       - name: flavor_profile
 
-  - name: stg__long
+  - name: stg__metadata
     description: ""
     tests:
       - unique:
-          column_name: "( dbt_id || '-' || note )"
+          column_name: "( dbt_id || '-' || _note_value )"
     columns:
       - name: dbt_id
         tests:
@@ -35,4 +35,5 @@ models:
       - name: proof
       - name: rating
       - name: my_review
-      - name: note
+      - name: _note_value
+      - name: _note_index
