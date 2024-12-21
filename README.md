@@ -1,15 +1,10 @@
-Welcome to your new dbt project!
+# Whiskey Tasting Machine Learning Pipeline
 
-### Using the starter project
+* Raw data is read in from a Google Sheet to a BigQuery table
+* The transformations *and* the applied ML all occur in the same `dbt` pipeline
+  * The `staging` layer reshapes the data to prepare it for modeling
+  * The `production` layer fits and applies the regression model
+* All of the core infrastructure is managed with Terraform - see `infra/` subdirectory
 
-Try running the following commands:
-- dbt run
-- dbt test
-
-
-### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+## Setup
+You can run all of the necessary `dbt` commands directly from the Docker container - just run `make shell`, `cd src`, and execute whatever commands you need.

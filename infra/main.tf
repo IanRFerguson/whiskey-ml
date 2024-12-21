@@ -12,12 +12,12 @@ provider "google" {
 }
 
 resource "google_dataproc_cluster" "dev_cluster" {
-  name      = "dev-cluster"
-  region    = "us-central1"
+  name   = "dev-cluster"
+  region = "us-central1"
 
   cluster_config {
     staging_bucket = google_storage_bucket.dev_bucket.id
-    temp_bucket = google_storage_bucket.dev_bucket.id
+    temp_bucket    = google_storage_bucket.dev_bucket.id
 
     gce_cluster_config {
       internal_ip_only = false
@@ -33,17 +33,12 @@ resource "google_dataproc_cluster" "dev_cluster" {
     }
 
     worker_config {
-      num_instances = 4
-      machine_type = "e2-medium"
-      disk_config {
-        boot_disk_type = "pd-ssd"
-        boot_disk_size_gb = 1000
-      }
+      num_instances = 0
     }
   }
 }
 
 resource "google_storage_bucket" "dev_bucket" {
-  name      = "whiskey-dbt-dev"
-  location  = "US"
+  name     = "whiskey-dbt-dev"
+  location = "US"
 }
