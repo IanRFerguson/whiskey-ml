@@ -22,6 +22,9 @@ SELECT
     _stg.proof,
     _stg.rating,
     AVG(_prd.predicted_rating) AS average_predicted_rating,
+    MIN(_prd.predicted_rating) AS minimum_predicted_rating,
+    MAX(_prd.predicted_rating) AS maximum_predicted_rating,
+    (_stg.rating - AVG(_prd.predicted_rating)) AS actual_vs_predicted,
     _stg.my_review,
     _stg.flavor_profile
 

@@ -1,7 +1,5 @@
-import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-from sklearn import preprocessing
 
 #####
 
@@ -14,7 +12,7 @@ def model(dbt, session):
     _x_values = df[_features]
     _y_values = df["rating"]
 
-    X_train, X_test, y_train, y_test = train_test_split(
+    X_train, _, y_train, _ = train_test_split(
         _x_values, _y_values, test_size=0.35, random_state=54
     )
 
