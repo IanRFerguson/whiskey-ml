@@ -9,7 +9,7 @@ WITH
 
 SELECT
 
-    {{ dbt_utils.generate_surrogate_key(['id', 'maker', 'name', 'my_rating']) }} AS dbt_id,
+    {{ dbt_utils.generate_surrogate_key(['id', 'maker', 'name']) }} AS dbt_id,
     id AS profile_id,
     maker,
     name,
@@ -18,8 +18,8 @@ SELECT
     country_of_origin,
     CAST(proof AS FLOAT64) AS proof,
     CAST(my_rating AS FLOAT64) AS rating,
-    my_review,
+    my_review AS review,
     {{ string_to_array('profile') }} AS flavor_profile
 
 FROM base
-WHERE my_rating IS NOT NULL
+{{ filter_ratings("my_rating") }}

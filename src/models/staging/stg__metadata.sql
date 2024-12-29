@@ -15,9 +15,10 @@ SELECT
     country_of_origin,
     proof,
     rating,
-    my_review,
+    review,
     TRIM(note) AS _note_value,
-    ROW_NUMBER() OVER (PARTITION BY dbt_id) AS _note_index
+    ROW_NUMBER() OVER (PARTITION BY dbt_id) AS _note_index,
+    {{ flavor_categories("TRIM(note)") }} AS _note_quality
 
 FROM base
 CROSS JOIN UNNEST(base.flavor_profile) AS note

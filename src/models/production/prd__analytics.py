@@ -7,10 +7,12 @@ from sklearn.model_selection import train_test_split
 def model(dbt, session):
     df = dbt.ref("stg__feature_selection").toPandas()
 
+    test_df = df.loc[df["rating"].notna()]
+
     _features = ["proof", "_note_index"] + [x for x in df.columns if "__" in x]
 
-    _x_values = df[_features]
-    _y_values = df["rating"]
+    _x_values = test_df[_features]
+    _y_values = test_df["rating"]
 
     X_train, _, y_train, _ = train_test_split(
         _x_values, _y_values, test_size=0.35, random_state=54
