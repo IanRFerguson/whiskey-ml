@@ -25,7 +25,7 @@ SELECT
     MIN(_prd.predicted_rating) AS minimum_predicted_rating,
     MAX(_prd.predicted_rating) AS maximum_predicted_rating,
     (_stg.rating - AVG(_prd.predicted_rating)) AS actual_vs_predicted,
-    _stg.my_review,
+    _stg.review,
     _stg.flavor_profile
 
 FROM {{ ref("stg__setup") }} AS _stg

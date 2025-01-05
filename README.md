@@ -1,11 +1,28 @@
-# Whiskey Tasting Machine Learning Pipeline
+# Modeling Whiskey Ratings
 
-* Raw data is read in from a Google Sheet to a BigQuery table
-* The transformations *and* the applied ML all occur in the same `dbt` pipeline
+This is a Machine Learning pipeline that predicts the overall rating of a whiskey based on its flavor profile, proof, and style.
+
+<img src="./plots/lr_results.png" width="45%">
+
+## Pipeline Details
+* I've filled out a Google Sheet with the metadata and reviews of 24 different whiskeys from around the world
+* This raw data is represented in BigQuery as a Connected Sheet - this serves as the input data in our `dbt` project
+* The transformations *and* the applied Machine Learning all occur seamlessly in the same `dbt` pipeline
   * The `staging` layer reshapes the data to prepare it for modeling
   * The `production` layer fits and applies the regression model
 
-## Setup
-You can run all of the necessary `dbt` commands directly from the Docker container - just run `make shell`, `cd src`, and execute whatever commands you need.
+## Model Results
+The regression model is actually predicting what I would rate the beverage 5 times over - one prediction per tasting note in order. Those ratings are then averaged to give us a compositie estimated rating. We can interpret narrower boxplots below as beverages that were more consistently predicted in this framework on a flavor by flavor basis: 
 
-The only core infrastructure required at startup is a GCS storage bucket, as the PySpark models are run on a serverless Kubernetes instance. 
+<img src="./plots/model_ranges.png" width="45%">
+
+In terms of individual whiskey categories, there was a lot of variance. The model predicted Irish whiskey ratings fairly well, but there was a ton of variance otherwise (especially for ryes):
+
+<img src="./plots/model_categories.png" width="45%">
+
+## Setup
+You can run all of the necessary `dbt` commands directly from the Docker container - just run `make shell` to initialize the container and execute `dbt build` directly from the command line.
+
+Run `make pipeline` to run the `dbt` steps and regenerate the plots you see here.
+
+The only requisitie cloud infrastructure required is a Google Storage bucket - this can be modified in [the dbt profile YAML](./src/profiles.yml), and is only required to unload the PySpark batches as they run on GKE clusters.

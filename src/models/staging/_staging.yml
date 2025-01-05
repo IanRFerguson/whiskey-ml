@@ -17,7 +17,7 @@ models:
       - name: country_of_origin
       - name: proof
       - name: rating
-      - name: my_review
+      - name: review
       - name: flavor_profile
 
   - name: stg__metadata
@@ -34,6 +34,6 @@ models:
       - name: country_of_origin
       - name: proof
       - name: rating
-      - name: my_review
+      - name: review
       - name: _note_value
       - name: _note_index

@@ -1,5 +1,6 @@
 **/*.pyc
 *.ipynb*
 **DS_Store*
+.Rhistory
 
 src/service_accounts/*.json

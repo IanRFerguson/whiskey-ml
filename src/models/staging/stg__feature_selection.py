@@ -1,18 +1,21 @@
+from typing import Optional, Union
+
 import numpy as np
 import pandas as pd
-from typing import Optional, Union
 
 #####
 
 FEATURE_MAP = [
     ("standard_styles", "style_"),
     ("country_of_origin", "country_"),
-    ("_note_value", "flavor_note_"),
+    ("_note_quality", "flavor_category_"),
 ]
 
 
 def get_binary_values(
-    df: pd.DataFrame, feature: tuple, dtype: Optional[Union[int, float, bool]] = int
+    df: pd.DataFrame,
+    feature: tuple,
+    dtype: Optional[Union[int, float, bool]] = int,  # NOQA
 ) -> pd.DataFrame:
     """
     Translates a categorical column into a binary column
@@ -33,7 +36,9 @@ def get_binary_values(
     df.drop(feature[0], axis=1, inplace=True)
 
     # Clean up columns
-    _tmp.columns = [x.lower().replace(" ", "").replace("-", "_") for x in _tmp.columns]
+    _tmp.columns = [
+        x.lower().replace(" ", "").replace("-", "_") for x in _tmp.columns
+    ]  # NOQA
 
     return _tmp
 
@@ -48,7 +53,7 @@ def model(dbt, session):
         lambda x: x - _average_rating
     )
 
-    df.drop("my_review", axis=1, inplace=True)
+    df.drop("review", axis=1, inplace=True)
 
     binary_maps = [df]
     for feature in FEATURE_MAP:
