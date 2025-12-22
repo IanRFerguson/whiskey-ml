@@ -2,7 +2,11 @@ WITH
     base AS (
         SELECT
 
-            *
+            {{
+                dbt_utils.star(
+                    from=ref("stg__setup")
+                )
+            }}
 
         FROM {{ ref("stg__setup") }}
     )

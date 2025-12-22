@@ -6,7 +6,7 @@ whiskey_ml:
       method: service-account
       project: ian-dev-444015
       dataset: dbt
-      threads: 4 
+      threads: 4
       keyfile: /app/src/service_accounts/ian_dev_v2.json
 
       # For dbt-python models

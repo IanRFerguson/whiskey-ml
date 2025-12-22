@@ -8,7 +8,6 @@ def model(dbt, session):
     dbt-python models
     """
 
-    # This is equivalent to {{ ref() }} in a standard dbt model
     df = dbt.ref("stg__feature_selection").toPandas()
 
     # Drop null values

@@ -3,4 +3,4 @@ sources:
   - name: raw
     schema: raw
     tables:
-      - name: whiskey_source_data
+      - name: whiskey_2024

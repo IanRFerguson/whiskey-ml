@@ -2,9 +2,13 @@ WITH
     base AS (
         SELECT
 
-            *
+            {{
+                dbt_utils.star(
+                    from=source("raw", "whiskey_2024")
+                )
+            }}
 
-        FROM {{ source("raw", "whiskey_source_data") }}
+        FROM {{ source("raw", "whiskey_2024") }}
     )
 
 SELECT
