@@ -36,9 +36,7 @@ def get_binary_values(
     df.drop(feature[0], axis=1, inplace=True)
 
     # Clean up columns
-    _tmp.columns = [
-        x.lower().replace(" ", "").replace("-", "_") for x in _tmp.columns
-    ]  # NOQA
+    _tmp.columns = [x.lower().replace(" ", "").replace("-", "_") for x in _tmp.columns]  # NOQA
 
     return _tmp
 
