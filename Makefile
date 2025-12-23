@@ -15,3 +15,9 @@ pipeline:
 ruff:
 	@ruff check . --fix
 	@ruff format .
+
+
+cluster-build:
+	@gsutil cp ./devops/init_nltk.sh gs://whiskey-ml-dataproc-staging-bucket/init_nltk.sh
+	@echo "Init script uploaded to GCS."
+	@cd ./infra && terraform apply

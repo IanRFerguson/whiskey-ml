@@ -3,9 +3,11 @@
 **DS_Store*
 .Rhistory
 
+build/
 **/logs/
 **/dbt_packages/
 **/target/
+**/*.egg-info/
 
 src/service_accounts/*.json
 infra/.terraform*
