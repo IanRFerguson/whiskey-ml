@@ -1,10 +1,6 @@
 # Start interactive shell in Docker
 shell:
-	@if [ ! -z $(build) ]; then				\
-		docker compose up --build -d;		\
-	else									\
-		docker compose up -d;				\
-	fi
+	@docker compose up --build -d;		
 	@docker compose exec -it whiskey_ml bash
 
 
@@ -14,3 +10,8 @@ pipeline:
 	@docker compose exec whiskey_ml dbt build -f
 	@docker compose down
 	@Rscript dev/plot_model_results.R
+
+
+ruff:
+	@ruff check . --fix
+	@ruff format .

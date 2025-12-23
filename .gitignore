@@ -3,4 +3,10 @@
 **DS_Store*
 .Rhistory
 
+**/logs/
+**/dbt_packages/
+**/target/
+
 src/service_accounts/*.json
+infra/.terraform*
+infra/*.tfstate*
