@@ -1,79 +1,69 @@
-"""
-This model performs semantic analysis on whiskey tasting notes
-using selected features from the staging feature selection model.
-"""
-
-import os
 import nltk
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import pandas as pd
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from pyspark.sql.functions import pandas_udf
+from pyspark.sql.types import DoubleType, StringType, StructField, StructType
 
 #####
 
-
-# Ensure NLTK data is downloaded (needs to run on each worker)
-def _ensure_vader_lexicon():
-
-    # Use /tmp as download directory (always writable)
-    download_dir = "/tmp/nltk_data"
-
-    # Add to NLTK data path if not already present
-    if download_dir not in nltk.data.path:
-        nltk.data.path.insert(0, download_dir)
-
-    try:
-        nltk.data.find("sentiment/vader_lexicon.zip")
-    except LookupError:
-        # Ensure directory exists
-        os.makedirs(download_dir, exist_ok=True)
-        nltk.download("vader_lexicon", download_dir=download_dir, quiet=True)
+result_schema = StructType(
+    [
+        StructField("review_sentiment", StringType(), True),
+        StructField("semantic_score", DoubleType(), True),
+    ]
+)
 
 
-def analyze_sentiment(text: str) -> dict:
+@pandas_udf(result_schema)
+def get_sentiment_spark(reviews: pd.Series) -> pd.DataFrame:
     """
-    Determines if a string is positive, negative, or neutral.
-    Returns a dictionary with the label and the raw score.
+    This function runs on the WORKER nodes in parallel.
+    It receives a Pandas Series of reviews and must return a Pandas DataFrame
+    matching the result_schema.
     """
-    # Download on each worker if needed
-    _ensure_vader_lexicon()
 
+    # Initialize NLTK on the worker
+    nltk.download("vader_lexicon", quiet=True)
+    nltk.data.path.append("/opt/conda/default/share/nltk_data")
     sia = SentimentIntensityAnalyzer()
-    scores = sia.polarity_scores(text)
 
-    # The 'compound' score ranges from -1 (most neg) to 1 (most pos)
-    compound = scores["compound"]
+    results = []
+    for text in reviews:
+        # Handle nulls
+        if text is None or text == "":
+            results.append({"review_sentiment": "Neutral", "semantic_score": 0.0})
+            continue
 
-    if compound >= 0.05:
-        sentiment = "Positive"
+        scores = sia.polarity_scores(str(text))
+        compound = scores["compound"]
 
-    elif compound <= -0.05:
-        sentiment = "Negative"
+        if compound >= 0.05:
+            sentiment = "Positive"
+        elif compound <= -0.05:
+            sentiment = "Negative"
+        else:
+            sentiment = "Neutral"
 
-    else:
-        sentiment = "Neutral"
+        results.append({"review_sentiment": sentiment, "semantic_score": compound})
 
-    return {"label": sentiment, "score": compound}
-
-
-def analyze_text(df: pd.DataFrame) -> None:
-    """
-    Placeholder function for semantic analysis.
-    In a real implementation, this would involve NLP techniques
-    to extract meaningful features from the tasting notes.
-    """
-
-    df["review_sentiment"] = df["review"].apply(lambda x: analyze_sentiment(x)["label"])
-    df["semantic_score"] = df["review"].apply(lambda x: analyze_sentiment(x)["score"])
+    return pd.DataFrame(results)
 
 
-def model(dbt, session) -> pd.DataFrame:
-    df = dbt.ref("stg__setup").toPandas()
+def model(dbt, session):
+    # dbt settings
+    dbt.config(materialized="table")
 
-    df = df.loc[:, ["dbt_id", "review"]]
+    # 2. Use Spark DataFrame instead of .toPandas()
+    # This stays on the cluster and does not pull data to the master node
+    df = dbt.ref("stg__setup").select("dbt_id", "review")
 
-    # Ensure VADER lexicon is available
-    _ensure_vader_lexicon()
+    # 3. Apply the UDF
+    # This creates a new 'struct' column containing both label and score
+    df_result = df.withColumn("sentiment_results", get_sentiment_spark(df["review"]))
 
-    analyze_text(df=df)
-
-    return df.loc[:, ["dbt_id", "review_sentiment", "semantic_score"]]
+    # 4. Flatten the results and return
+    return df_result.select(
+        "dbt_id",
+        "sentiment_results.review_sentiment",
+        "sentiment_results.semantic_score",
+    )

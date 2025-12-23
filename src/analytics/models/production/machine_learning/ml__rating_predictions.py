@@ -3,8 +3,9 @@ This model fits a linear regression to predict z-transformed ratings
 based on selected features from the staging feature selection model.
 """
 
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
+from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.regression import LinearRegression
+from pyspark.sql import functions as F
 
 #####
 
@@ -15,40 +16,40 @@ def model(dbt, session):
     dbt-python models
     """
 
-    df = dbt.ref("stg__feature_selection").toPandas()
+    df = dbt.ref("stg__feature_selection")
 
     # Drop null values
-    test_df = df.loc[df["rating"].notna()]
+    test_df = df.filter(F.col("rating").isNotNull())
 
     # Isolate the features and the target variable
-    _features = ["proof", "_note_index"] + [x for x in df.columns if "__" in x]
-    _x_values = test_df[_features]
-    _y_values = test_df["_z_rating"]
+    feature_cols = ["proof", "_note_index"] + [x for x in df.columns if "__" in x]
+
+    # Assemble features into a single vector column (required for Spark MLlib)
+    assembler = VectorAssembler(inputCols=feature_cols, outputCol="features")
+    assembled_df = assembler.transform(test_df)
 
     # Split the dataframe into training subsets (so as not to overfit)
-    X_train, _, y_train, _ = train_test_split(
-        _x_values, _y_values, test_size=0.35, random_state=54
-    )
+    train_df, test_df = assembled_df.randomSplit([0.65, 0.35], seed=54)
 
     # Fit the regression model
-    lr = LinearRegression().fit(X=X_train, y=y_train)
+    lr = LinearRegression(
+        featuresCol="features",
+        labelCol="_z_rating",
+        predictionCol="_predicted_z_rating",
+    )
+    lr_model = lr.fit(train_df)
 
-    # We'll use the fitted regression model to predict ratings on the dataset
-    _prediction_set = df[_features]
-    _predicted_vals = lr.predict(_prediction_set)
+    # Apply predictions to the full dataset
+    full_assembled = assembler.transform(df)
+    predictions_df = lr_model.transform(full_assembled)
 
-    # Assign those predicted values to a new column
-    df["_predicted_z_rating"] = _predicted_vals
+    # Select relevant columns
+    result_df = predictions_df.select(
+        "dbt_id",
+        "profile_id",
+        "_z_rating",
+        "_predicted_z_rating",
+        "_note_index",
+    )
 
-    df = df.loc[
-        :,
-        [
-            "dbt_id",
-            "profile_id",
-            "_z_rating",
-            "_predicted_z_rating",
-            "_note_index",
-        ],
-    ]
-
-    return df
+    return result_df
