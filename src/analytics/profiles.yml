@@ -1,0 +1,16 @@
+whiskey_ml:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: ian-dev-444015
+      dataset: dbt
+      threads: 4
+      keyfile: /app/src/service_accounts/ian_dev_v2.json
+
+      # NOTE - These resources are managed with Terraform
+      # See: `/infra` directory
+      gcs_bucket: whiskey-ml-dataproc-staging-bucket
+      dataproc_cluster_name: whiskey-ml-cluster
+      dataproc_region: us-central1
