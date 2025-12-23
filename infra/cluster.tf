@@ -4,6 +4,7 @@ resource "google_dataproc_cluster" "ml_cluster" {
 
   cluster_config {
     staging_bucket = google_storage_bucket.dataproc_staging_bucket.name
+    temp_bucket    = google_storage_bucket.dataproc_staging_bucket.name
 
     master_config {
       num_instances = 1
@@ -27,6 +28,14 @@ resource "google_dataproc_cluster" "ml_cluster" {
 
     software_config {
       image_version = "2.2-debian11"
+      # properties = {
+      #   "spark:spark.executorEnv.NLTK_DATA" = "/opt/conda/default/share/nltk_data"
+      # }
     }
+
+    # initialization_action {
+    #   script      = "gs://${google_storage_bucket.dataproc_staging_bucket.name}/init_nltk.sh"
+    #   timeout_sec = 300
+    # }
   }
 }
