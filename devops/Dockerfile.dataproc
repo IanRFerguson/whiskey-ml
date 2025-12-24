@@ -1,0 +1,32 @@
+# 1. Use a standard Debian base to avoid proprietary mismatch errors
+FROM debian:12-slim
+
+# 2. Set mandatory environment variables
+ENV PYTHONUNBUFFERED=1
+ENV NLTK_DATA=/usr/local/share/nltk_data
+
+# 3. Install system dependencies (tini is REQUIRED for Dataproc Serverless)
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    tini \
+    unzip \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY pyproject.toml .
+RUN pip3 install --no-cache-dir --break-system-packages .
+
+# 4. Pre-download NLTK data. 
+# Don't manually create the 'sentiment' folder; the downloader does this.
+RUN python3 -m nltk.downloader -d /usr/local/share/nltk_data vader_lexicon && \
+    cd /usr/local/share/nltk_data/sentiment && \
+    unzip vader_lexicon.zip && \
+    rm vader_lexicon.zip
+
+# 5. Fix permissions for the spark user
+RUN chmod -R 755 /usr/local/share/nltk_data
+
+USER 1099
+ENTRYPOINT ["/usr/bin/tini", "--"]

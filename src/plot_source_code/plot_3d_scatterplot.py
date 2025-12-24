@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -18,10 +20,17 @@ def get_dataframe(
     return df
 
 
-def main(
-    kbq: BigQueryConnector, output_path: str = "/app/plots/3d_scatterplot.png"
+def write_plot_to_file(
+    df: pd.DataFrame,
+    output_path: str,
+    x_var: str,
+    y_var: str,
+    z_var: str,
+    label_var: str,
 ) -> None:
-    df = get_dataframe(kbq=kbq)
+    """
+    Generates a 3D scatter plot and saves it to a file.
+    """
 
     # Use a clean theme
     sns.set_theme(style="whitegrid")
@@ -43,10 +52,10 @@ def main(
     # - 'edgecolor' makes points pop against each other
     # - 'alpha' helps visualize density where points overlap
     scatter = ax.scatter(
-        df["_z_rating"],
-        df["average_predicted_z_rating"],
-        df["proof"],
-        c=df["_cluster_label"],
+        df[x_var],
+        df[y_var],
+        df[z_var],
+        c=df[label_var],
         cmap="viridis",  # Better color palette (e.g., viridis, plasma, or rocket)
         s=500,  # Slightly smaller size for better clarity
         edgecolor="white",  # White border around points
@@ -56,9 +65,9 @@ def main(
 
     # 3. Labels & Title
     # Added padding and font weights for readability
-    ax.set_xlabel("Z-Score", labelpad=10, fontweight="bold")
-    ax.set_ylabel("Avg Predicted Z-Score", labelpad=10, fontweight="bold")
-    ax.set_zlabel("Alcohol by Volume", labelpad=10, fontweight="bold")
+    ax.set_xlabel(x_var, labelpad=10, fontweight="bold")
+    ax.set_ylabel(y_var, labelpad=10, fontweight="bold")
+    ax.set_zlabel(z_var, labelpad=10, fontweight="bold")
     plt.title(
         "Whiskey Analysis: Cluster Distribution", fontsize=16, pad=20, fontweight="bold"
     )
@@ -80,10 +89,31 @@ def main(
     plt.savefig(output_path, dpi=300)
 
 
+def main(kbq: BigQueryConnector) -> None:
+    df = get_dataframe(kbq=kbq)
+    write_plot_to_file(
+        df=df,
+        output_path=f"/app/plots/{datetime.now().strftime('%Y')}/3d_scatterplot__by_cluster.png",
+        x_var="_z_rating",
+        y_var="average_predicted_z_rating",
+        z_var="semantic_score",
+        label_var="cluster_label",
+    )
+
+    # write_plot_to_file(
+    #     df=df,
+    #     output_path="/app/3d_scatterplot__by_style.png",
+    #     x_var="_z_rating",
+    #     y_var="average_predicted_z_rating",
+    #     z_var="semantic_score",
+    #     label_var="standard_styles",
+    # )
+
+
 #####
 
 if __name__ == "__main__":
     # Create connection to BigQuery
     kbq = BigQueryConnector("/app/src/service_accounts/ian_dev_v2.json")
 
-    main(kbq=kbq, output_path="/app/plots/3d_scatterplot.png")
+    main(kbq=kbq)

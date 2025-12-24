@@ -1,6 +1,8 @@
 resource "google_storage_bucket" "dataproc_staging_bucket" {
-  name     = "whiskey-ml-dataproc-staging-bucket"
-  location = "US"
+  project       = "ian-dev-444015"
+  name          = "whiskey-ml-dataproc-staging-bucket"
+  location      = "US"
+  force_destroy = true
 }
 
 # NOTE - This techincally isn't a "bucket" resource, but it is related to general

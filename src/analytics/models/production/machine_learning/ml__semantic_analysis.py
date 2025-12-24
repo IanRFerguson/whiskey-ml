@@ -1,6 +1,6 @@
-import nltk
 import pandas as pd
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from pyspark import SparkFiles
 from pyspark.sql.functions import pandas_udf
 from pyspark.sql.types import DoubleType, StringType, StructField, StructType
 
@@ -22,10 +22,10 @@ def get_sentiment_spark(reviews: pd.Series) -> pd.DataFrame:
     matching the result_schema.
     """
 
+    local_path = SparkFiles.get("vader_lexicon.txt")
+
     # Initialize NLTK on the worker
-    nltk.download("vader_lexicon", quiet=True)
-    nltk.data.path.append("/opt/conda/default/share/nltk_data")
-    sia = SentimentIntensityAnalyzer()
+    sia = SentimentIntensityAnalyzer(lexicon_file=local_path)
 
     results = []
     for text in reviews:
@@ -37,6 +37,7 @@ def get_sentiment_spark(reviews: pd.Series) -> pd.DataFrame:
         scores = sia.polarity_scores(str(text))
         compound = scores["compound"]
 
+        # NOTE: Kind of a naive threshold but good enough for now
         if compound >= 0.05:
             sentiment = "Positive"
         elif compound <= -0.05:
@@ -50,18 +51,15 @@ def get_sentiment_spark(reviews: pd.Series) -> pd.DataFrame:
 
 
 def model(dbt, session):
-    # dbt settings
-    dbt.config(materialized="table")
-
-    # 2. Use Spark DataFrame instead of .toPandas()
-    # This stays on the cluster and does not pull data to the master node
+    # Pull in the staging data with the relevant columns
     df = dbt.ref("stg__setup").select("dbt_id", "review")
 
-    # 3. Apply the UDF
+    gcs_lexicon_path = "gs://whiskey-ml-dataproc-staging-bucket/vader_lexicon.txt"
+    session.sparkContext.addFile(gcs_lexicon_path)
+
     # This creates a new 'struct' column containing both label and score
     df_result = df.withColumn("sentiment_results", get_sentiment_spark(df["review"]))
 
-    # 4. Flatten the results and return
     return df_result.select(
         "dbt_id",
         "sentiment_results.review_sentiment",

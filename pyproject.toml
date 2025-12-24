@@ -7,7 +7,9 @@ dependencies = [
     "dbt-bigquery==1.8.0",
     "dbt-semantic-interfaces==0.5.1",
     "klondike",
+    "nltk",
     "seaborn==0.13.2",
+    "textblob==0.19.0",
 ]
 name = "whiskey-ml"
 version = "0.2.0"

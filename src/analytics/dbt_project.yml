@@ -19,7 +19,7 @@ models:
     +persist_docs:
       relation: true
       columns: true
-    +submission_method: cluster
+    +submission_method: serverless
     
     staging:
       +schema: staging

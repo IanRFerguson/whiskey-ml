@@ -3,7 +3,6 @@ WITH
         SELECT
         
             dbt_id,
-            profile_id,
             _z_rating,
             _predicted_z_rating
 

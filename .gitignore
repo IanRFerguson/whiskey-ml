@@ -10,5 +10,5 @@ build/
 **/*.egg-info/
 
 src/service_accounts/*.json
-infra/.terraform*
-infra/*.tfstate*
+infra/**/.terraform*
+infra/**/*.tfstate*

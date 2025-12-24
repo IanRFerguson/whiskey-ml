@@ -5,3 +5,7 @@ services:
       dockerfile: ./devops/Dockerfile
     volumes:
       - .:/app
+
+  debugger:
+    image: us-central1-docker.pkg.dev/ian-dev-444015/whiskey-ml/whiskey_ml_dataproc:latest
+    command: ["sleep", "infinity"]

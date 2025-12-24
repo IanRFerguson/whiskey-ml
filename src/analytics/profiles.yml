@@ -12,5 +12,18 @@ whiskey_ml:
       # NOTE - These resources are managed with Terraform
       # See: `/infra` directory
       gcs_bucket: whiskey-ml-dataproc-staging-bucket
-      dataproc_cluster_name: whiskey-ml-cluster
       dataproc_region: us-central1
+      
+      # Dataproc Serverless configuration
+      submission_method: serverless
+
+      dataproc_batch:
+        # Force the smallest possible machine shapes
+        runtime_config:
+          properties:
+            "spark.driver.cores": "4"
+            "spark.driver.memory": "4g"
+            "spark.executor.cores": "4"
+            "spark.executor.memory": "4g"
+            "spark.executor.instances": "2"
+            "spark.dynamicAllocation.enabled": "false"

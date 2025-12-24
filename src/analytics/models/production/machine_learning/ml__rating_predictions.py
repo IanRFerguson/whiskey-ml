@@ -49,7 +49,6 @@ def model(dbt, session):
         "profile_id",
         "_z_rating",
         "_predicted_z_rating",
-        "_note_index",
     )
 
     return result_df
