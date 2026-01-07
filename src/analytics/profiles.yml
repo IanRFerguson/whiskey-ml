@@ -1,0 +1,29 @@
+whiskey_ml:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: ian-dev-444015
+      dataset: dbt
+      threads: 4
+      keyfile: /app/src/service_accounts/ian_dev_v2.json
+
+      # NOTE - These resources are managed with Terraform
+      # See: `/infra` directory
+      gcs_bucket: whiskey-ml-dataproc-staging-bucket
+      dataproc_region: us-central1
+      
+      # Dataproc Serverless configuration
+      submission_method: serverless
+
+      dataproc_batch:
+        # Force the smallest possible machine shapes
+        runtime_config:
+          properties:
+            "spark.driver.cores": "4"
+            "spark.driver.memory": "4g"
+            "spark.executor.cores": "4"
+            "spark.executor.memory": "4g"
+            "spark.executor.instances": "2"
+            "spark.dynamicAllocation.enabled": "false"

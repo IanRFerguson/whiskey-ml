@@ -3,7 +3,9 @@ version: 2
 models:
   # NOTE - These are documented in sequential order
   - name: stg__setup
-    description: ""
+    description: |
+      This staging model is responsible for the initial cleaning and
+      standardization of the raw whiskey data.
     columns:
       - name: dbt_id
         tests:
@@ -37,3 +39,9 @@ models:
       - name: review
       - name: _note_value
       - name: _note_index
+
+  - name: stg__feature_selection
+    description: ""
+    tests:
+      - unique:
+          column_name: "( dbt_id || '-' || _note_value )"

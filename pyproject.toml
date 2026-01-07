@@ -1,0 +1,44 @@
+[project]
+dependencies = [
+    "dbt-adapters==1.1.1",
+    "dbt-common==1.0.4",
+    "dbt-core==1.8.0",
+    "dbt-extractor==0.5.1",
+    "dbt-bigquery==1.8.0",
+    "dbt-semantic-interfaces==0.5.1",
+    "klondike",
+    "nltk",
+    "seaborn==0.13.2",
+    "textblob==0.19.0",
+]
+name = "whiskey-ml"
+version = "0.2.0"
+
+
+[tool.ruff]
+line-length = 88
+indent-width = 4
+target-version = "py310"
+
+[tool.ruff.lint]
+extend-ignore = [
+    "F401",
+    "E203",
+    "E266",
+    "E402",
+    "E501",
+    "E711",
+    "E712",
+    "F403",
+    "F821",
+]
+select = ["E", "F", "I"]
+
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = false
+docstring-code-line-length = "dynamic"
