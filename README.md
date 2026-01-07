@@ -14,11 +14,11 @@ This is a Machine Learning pipeline that predicts the overall rating of a whiske
 ## Model Results
 The regression model is actually predicting what I would rate the beverage 5 times over - one prediction per tasting note in order. Those ratings are then averaged to give us a compositie estimated rating. We can interpret narrower boxplots below as beverages that were more consistently predicted in this framework on a flavor by flavor basis: 
 
-<img src="./plots/model_ranges.png" width="45%">
+<img src="./plots/2026/3d_scatterplot__by_cluster.png" width="45%">
 
 In terms of individual whiskey categories, there was a lot of variance. The model predicted Irish whiskey ratings fairly well, but there was a ton of variance otherwise (especially for ryes):
 
-<img src="./plots/model_categories.png" width="45%">
+<img src="./plots/2025/model_categories.png" width="45%">
 
 ## Setup
 You can run all of the necessary `dbt` commands directly from the Docker container - just run `make shell` to initialize the container and execute `dbt build` directly from the command line.

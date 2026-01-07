@@ -8,6 +8,7 @@ build/
 **/dbt_packages/
 **/target/
 **/*.egg-info/
+.venv/
 
 src/service_accounts/*.json
 infra/**/.terraform*

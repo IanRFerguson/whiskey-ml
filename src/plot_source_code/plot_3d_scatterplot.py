@@ -27,6 +27,9 @@ def write_plot_to_file(
     y_var: str,
     z_var: str,
     label_var: str,
+    x_label: str,
+    y_label: str,
+    z_label: str,
 ) -> None:
     """
     Generates a 3D scatter plot and saves it to a file.
@@ -65,9 +68,9 @@ def write_plot_to_file(
 
     # 3. Labels & Title
     # Added padding and font weights for readability
-    ax.set_xlabel(x_var, labelpad=10, fontweight="bold")
-    ax.set_ylabel(y_var, labelpad=10, fontweight="bold")
-    ax.set_zlabel(z_var, labelpad=10, fontweight="bold")
+    ax.set_xlabel(x_label, labelpad=10, fontweight="bold")
+    ax.set_ylabel(y_label, labelpad=10, fontweight="bold")
+    ax.set_zlabel(z_label, labelpad=10, fontweight="bold")
     plt.title(
         "Whiskey Analysis: Cluster Distribution", fontsize=16, pad=20, fontweight="bold"
     )
@@ -98,16 +101,10 @@ def main(kbq: BigQueryConnector) -> None:
         y_var="average_predicted_z_rating",
         z_var="semantic_score",
         label_var="cluster_label",
+        x_label="Reported Z-Rating",
+        y_label="Predicted Z-Rating",
+        z_label="Rating Semantic Score",
     )
-
-    # write_plot_to_file(
-    #     df=df,
-    #     output_path="/app/3d_scatterplot__by_style.png",
-    #     x_var="_z_rating",
-    #     y_var="average_predicted_z_rating",
-    #     z_var="semantic_score",
-    #     label_var="standard_styles",
-    # )
 
 
 #####
